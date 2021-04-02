@@ -1,10 +1,13 @@
 import {useState, useEffect} from 'react';
 import {useParams, Redirect} from 'react-router-dom';
+import {useContext} from 'react';
+import UserContext from './UserContext';
 import JoblyAPI from '../api';
 
 import JobsDetails from './JobsDetails';
 
-function Company({user, setUserInfo}) {
+function Company() {
+    const {user} = useContext(UserContext);
     const [details, setDetails] = useState([])
     const {name} = useParams()
     
@@ -18,13 +21,14 @@ function Company({user, setUserInfo}) {
     },[name])
 
     
+
     return (
         <>
-            {user.username ?
+            {user ?
                 <div className="grid justify-items-center">
                 <h1 className="text-2xl">{details.name}</h1>
                 <p>{details.description}</p>
-                {details.jobs ? details.jobs.map((job) => <JobsDetails key={job.id} user={user} setUserInfo={setUserInfo} data={job}/>) : <div>Loading...</div>}
+                {details.jobs ? details.jobs.map((job) => <JobsDetails key={job.id} data={job}/>) : <div>Loading...</div>}
             </div>
             :
             <Redirect to="/" />

@@ -1,12 +1,15 @@
 import JoblyAPI from '../api'
+import {useContext} from 'react';
+import UserContext from './UserContext';
 
-const JobsDetails = ({data, user, setUserInfo}) => {
-
+const JobsDetails = ({data}) => {
+    const {user, applications, setApplications} = useContext(UserContext);
     const handleApply = async () => {
-        await JoblyAPI.jobApplication({username: user.username, jobId:data.id})
-        let res = await JoblyAPI.getUser(user.username, user.token)
-        setUserInfo(res.user)
+        await JoblyAPI.jobApplication({username: user.user.username, jobId:data.id})
+        setApplications(new Set([...applications, data.id]))
+        
     }
+    console.log(applications)
 
     return (
         <div to="/" className=" p-3 m-3 h-36 w-5/6 bg-white  shadow-sm border relative transition duration-100 ease-in-out shadow-sm hover:shadow-md transform hover:-translate-y-1 hover:scale-105">
@@ -18,8 +21,8 @@ const JobsDetails = ({data, user, setUserInfo}) => {
                 <p className=" text-xs ">Equity: {data.equity || "None"}</p>
             </div>
             
-            {user.applications.includes(data.id) ?
-            <button  className="absolute bottom-0 right-5 h-8 w-20 bg-red-300 rounded-md mb-3 text-white focus:outline-none">APLLY</button>
+            {applications.has(data.id) ?
+            <button  className="absolute bottom-0 right-5 h-8 w-20 bg-red-300 rounded-md mb-3 text-white focus:outline-none">APLLYED</button>
             : <button onClick={handleApply} className="absolute bottom-0 right-5 h-8 w-20 bg-red-500 rounded-md mb-3 text-white">APLLY</button> } 
             
             

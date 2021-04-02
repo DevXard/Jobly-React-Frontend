@@ -2,13 +2,18 @@ import {useState, useEffect} from 'react';
 import JoblyAPI from '../api';
 import {Redirect} from 'react-router-dom';
 import {toLowerCase} from "../helpers/helpers"
+import {useContext} from 'react';
+import UserContext from './UserContext';
 
 import JobsDetails from './JobsDetails';
 import Search from './Search';
 
 
 
-const Jobs = ({user, setUserInfo}) => {
+const Jobs = ({setUserInfo}) => {
+
+    const {user} = useContext(UserContext);
+
     const [jobs, setJobs] = useState([])
 
     useEffect(() => {
@@ -27,10 +32,10 @@ const Jobs = ({user, setUserInfo}) => {
     
     return(
         <>
-            {user.username ? 
+            {user ? 
             <div className="grid justify-items-center">
                 <Search filter={filterJobs}/>
-                {jobs ? jobs.map(job => <JobsDetails key={job.id} user={user} data={job} setUserInfo={setUserInfo} />) : <div>Loading...</div>}
+                {jobs ? jobs.map(job => <JobsDetails key={job.id} data={job} />) : <div>Loading...</div>}
             </div>
             :
             <Redirect to='/' />

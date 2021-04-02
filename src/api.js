@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
+const BASE_URL = process.env.REACT_APP_BASE_URL || "https://joblybackendpav.herokuapp.com";
 
 /** API Class.
  *
@@ -76,10 +76,8 @@ class JoblyApi {
   }
 
   //get info about the user
-  static async getUser(name, token){
-    if(token){
-      this.token = token
-    }
+  static async getUser(name){
+    
     let res = await this.request(`users/${name}`)
     return res
   }

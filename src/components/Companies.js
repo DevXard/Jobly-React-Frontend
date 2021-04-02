@@ -1,12 +1,14 @@
 import {useState, useEffect} from 'react'
 import {Redirect} from 'react-router-dom';
+import {useContext} from 'react';
+import UserContext from './UserContext';
 import JoblyAPI from '../api'
 
 import CompanyCard from './CompanyCard'
 import Search from './Search'
 
-const Companies = ({user}) => {
-    
+const Companies = () => {
+    const { user } = useContext(UserContext);
     const [companies, setCompanies] = useState([])
     
     useEffect(() => {
@@ -27,7 +29,7 @@ const Companies = ({user}) => {
 
     return (
         <>
-            {user.username ? 
+            {user.user.username ? 
                 <div className=' grid justify-items-center'>
                 <Search filter={filterCompanies}/>
                 {companies.map((data) => <CompanyCard key={data.handle} data={data}>hi</CompanyCard>)}

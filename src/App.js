@@ -2,6 +2,8 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {useState, useEffect} from 'react';
 import JoblyAPI from './api';
 import Storege from './components/Storege';
+import UserContext from './components/UserContext';
+import jwt from 'jsonwebtoken';
 // import Context from './components/userContext';
 
 //components
@@ -19,67 +21,116 @@ import NavBar from './components/NavBar';
 import './App.css';
 
 function App() {
-  let currUser = JSON.parse(window.localStorage.getItem('user'))
-  const [user, setUser] = useState(currUser.user|| {})
-  const [userInfo, setUserInfo] = Storege()
+  
+  const [user, setUser] = useState(null)
+  const [token, setToken] = Storege("token")
+  const [applications, setApplications] = useState(new Set([]))
 
-  console.log(userInfo)
+  
 
   useEffect(() => {
-    const token = JSON.parse(window.localStorage.getItem('user')).user
-    if(token){
-      JoblyAPI.autoLogin(token.token || '')
+
+    const getCurrUser = async () =>{
+      if(token){
+        try{
+          let {username} = jwt.decode(token);
+
+          JoblyAPI.token = token;
+          let currentUser = await JoblyAPI.getUser(username)
+          console.log("Current user", currentUser)
+          setUser(currentUser)
+          setApplications(new Set(currentUser.user.applications))
+        }catch(e){
+          console.error(e)
+          setUser(null)
+        }
+      }
     }
-    setUserInfo(user)
-  },[user])
+
+    getCurrUser()
+  }, [token])
+ 
 
   const login = async(info) => { 
-    let res = await JoblyAPI.login(info)
+    try{
+      let res = await JoblyAPI.login(info)
+      setToken(res);
+      return{success: true}
+    }catch(e){
+      console.error("Login Faild", e)
+      return{success: false}
+    }
     
-    setUser({username: info.username, token: res})
+    
   }
 
   const signUp = async(data) => {
-    let res = await JoblyAPI.registerUser(data)
-    setUser({username: data.username, token: res})
+    try{
+      let res = await JoblyAPI.registerUser(data)
+      setToken(res)
+      return{success: true}
+    }catch(e){
+      console.error("Sign Up Faild", e)
+      return{success: false}
+    }
+    
+    
   }
 
   const logout = () => {
     JoblyAPI.logout()
-    setUser({})
-    window.localStorage.setItem('user', JSON.stringify({}))
+    setUser(null)
+    setToken(null)
   }
   
   return (
     <div className="grid justify-items-stretch">
       <BrowserRouter >
-      <NavBar name={user.username} logout={logout}/>
+      <UserContext.Provider value={{login, signUp, logout, user, applications, setApplications}}>
+      <NavBar logout={logout}/>
         <Switch>
           <Route exact path="/">
-            <Welcome name={user.username} />
+            <Welcome />
           </Route>
           <Route exact path="/companies">
-            <Companies user={user} />
+            <Companies  />
           </Route>
           <Route exact path="/companies/:name">
-            <Company user={user} setUserInfo={setUser} />
+            <Company />
           </Route>
           <Route exact path="/jobs">
-            <Jobs user={user} setUserInfo={setUser} />
+            <Jobs   />
           </Route>
           <Route  exact path="/login">
-            <Login login={login} />
+            <Login  />
           </Route>
           <Route exact path="/signup">
-            <SignUp signUp={signUp} />
+            <SignUp  />
           </Route>
           <Route exact path="/profile">
-            <Profile user={userInfo} login={login} />
+            <Profile  />
           </Route>
         </Switch>
+        </UserContext.Provider>
       </BrowserRouter>
     </div>
   );
 }
 
 export default App;
+
+
+
+// useEffect(() => {
+//   let currUser = JSON.parse(window.localStorage.getItem('user'))
+//   console.log( "CURUSER",currUser)
+//   if(currUser !== null){
+//     setUser(currUser)
+//   }
+//   setUserInfo(user)
+// },[])
+// useEffect(() => {
+
+  
+//   setUserInfo(user)
+// },[user])

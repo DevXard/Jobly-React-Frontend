@@ -1,8 +1,10 @@
 import {useState} from 'react';
 import {useHistory} from 'react-router-dom';
+import {useContext} from 'react';
+import UserContext from './UserContext';
 
-const SignUp = ({signUp}) => {
-
+const SignUp = () => {
+    const {signUp} = useContext(UserContext);
     const [formData, setFormData] = useState({
         username: '',
         password: '',

@@ -1,11 +1,17 @@
 import {Link} from 'react-router-dom';
+import {useContext} from 'react';
+import UserContext from './UserContext';
 
-const Welcome = ({name}) => {
+const Welcome = () => {
+    const {user} = useContext(UserContext);
+
     
+
     return (
         <div className="justify-self-center">
-        {name ?
-            <h1 className=" text-2xl">Welcome {name}</h1> 
+        
+        {user ?
+            <h1 className=" text-2xl">Welcome {user.user.username}</h1>
             : 
             <div className="justify-self-center mt-5 text-2xl font-sans">
                 <h1 className=" flex justify-center">Welcome</h1>

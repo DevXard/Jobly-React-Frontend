@@ -1,9 +1,11 @@
 import JoblyAPI from '../api'
 import {useState, useEffect} from 'react';
+import {useContext} from 'react';
+import UserContext from './UserContext';
 import { Link } from 'react-router-dom';
 
-const Profile = ({user, login}) => {
-    
+const Profile = () => {
+    const {user} = useContext(UserContext);
     
     const [formData, setFormData] = useState({
         
@@ -16,13 +18,13 @@ const Profile = ({user, login}) => {
     
     
     useEffect(() => {
-        let storedUser = JSON.parse(window.localStorage.getItem('user'))
-        if(storedUser.user){
+        
+        if(user){
             setFormData(formData => ({
                 ...formData,
-                firstName: storedUser.user.firstName,
-                lastName: storedUser.user.lastName,
-                email: storedUser.user.email
+                firstName: user.user.firstName,
+                lastName: user.user.lastName,
+                email: user.user.email
             }))
         }
        
@@ -54,7 +56,7 @@ const Profile = ({user, login}) => {
         
     }
     
-    if(!user.user){
+    if(!user){
         return <div className="justify-self-center mt-5 text-2xl font-sans">
                 <h1 className="flex justify-center">You have to login or sign up first</h1>
                     <div  className="flex mt-5 justify-center">

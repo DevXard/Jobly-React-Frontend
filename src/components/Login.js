@@ -1,13 +1,18 @@
 import {useState} from 'react';
 import {useHistory} from 'react-router-dom';
+import {useContext} from 'react';
+import UserContext from './UserContext';
 
-const Loging = ({login}) => {
+const Loging = () => {
+
+    const {login} = useContext(UserContext);
+    const history = useHistory();
     const [formData, setFormData] = useState({
         username: '',
         password: ''
     })
 
-    const history = useHistory();
+    
 
     const handleChange = (e) => {
         e.preventDefault();

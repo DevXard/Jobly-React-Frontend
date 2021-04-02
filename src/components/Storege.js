@@ -1,24 +1,17 @@
 import {useState, useEffect} from 'react';
-import JoblyAPI from '../api';
 
-const Storege = () => {
-    
-    const [state, setState] = useState({})
+const Storege = (key, username=null) => {
+    const value = localStorage.getItem(key) || username;
+    const [state, setState] = useState(value)
     
     useEffect(() => {
-        if(state.username) {
-            const getUserInfo = async () => {
-                let result = await JoblyAPI.getUser(state.username, state.token);
-                result.user["token"] = state.token
-                let saveUser = result;
-                
-                window.localStorage.setItem('user', JSON.stringify(saveUser))
-                setState(result)
-            }
-       
-            getUserInfo()
+        if(state === null) {
+            localStorage.removeItem(key)
+        }else {
+            localStorage.setItem(key, state)
         }
-    }, [state])
+
+    }, [key, state])
     
     return [state, setState]
 }
